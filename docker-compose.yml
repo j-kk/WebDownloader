@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  redis:
+    image: redis:latest
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python3 -m flask run --host 0.0.0.0
+    restart: always
+    ports:
+      - "5000:5000"
+    links:
+      - redis
+    volumes:
+      - data-volume:/db
+    env_file:
+      - cfg.env
+
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A API.run.celery worker --loglevel=INFO
+    links:
+      - redis
+    volumes:
+      - data-volume:/db
+    env_file:
+      - cfg.env
+
+
+volumes:
+  data-volume:
