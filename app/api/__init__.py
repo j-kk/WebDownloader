@@ -6,7 +6,7 @@ print(module)
 # Enable flask instance
 module.set_flask()
 
-from .resources import views
+from .task import views
 # Register the api blueprint
 module.register_blueprint(views.taskHandlerBp)
 

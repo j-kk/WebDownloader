@@ -1,8 +1,9 @@
 import shutil
+
 from celery.signals import after_task_publish
 
 from . import module
-from .resources.webres import Website
+from .helpers.webres import Website
 
 celery = module.celery
 

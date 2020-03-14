@@ -3,10 +3,9 @@ from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
 
 from app.jobs import module
-
+from app.jobs.helpers.webres import get_url
 from app.jobs.task_management import check_state, find_result
 from app.jobs.tasks import textTask, imageTask
-from app.jobs.resources.webres import get_url
 
 taskHandlerBp = Blueprint(name='taskHandler', import_name='tHandler')
 api = Api(taskHandlerBp)

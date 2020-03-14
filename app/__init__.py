@@ -1,1 +1,1 @@
-print('app init')
+"""Initialization of the main package"""
