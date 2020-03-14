@@ -1,19 +1,15 @@
 """Factory module."""
-# Flask based imports
 from flask import Flask
-
-# Plugins based imports
 from celery import Celery
 
-# API configuration imports
-from API.config import config
+from app.core.config import config
 
 # System based imports
 import os
 
-
-class Factory(object):
-    """Build the instances needed for the API."""
+class Module():
+    """Build the instances needed for the app."""
+    config = {}
 
     def __init__(self, environment='default'):
         """Initialize Factory with the proper environment."""
@@ -21,6 +17,13 @@ class Factory(object):
         self._environment = os.getenv("APP_ENVIRONMENT")
         if not self._environment:
             self._environment = environment
+
+        self._config_template = config[self._environment]
+
+        for key in dir(self._config_template):
+            if key.isupper():
+                self.config[key] = getattr(self._config_template, key)
+
 
     @property
     def environment(self):
@@ -32,11 +35,12 @@ class Factory(object):
         # Update environment protected variable
         self._environment = environment
 
-        # Update Flask configuration
-        self.flask.config.from_object(config[self._environment])
+        # Update Flask configuration (if enabled)
+        if self.flask:
+            self.flask.config.from_object(config[self._environment])
 
         # Update Celery Configuration
-        self.celery.conf.update(self.flask.config)
+        self.celery.conf.update(self.config)
 
     def set_flask(self, **kwargs):
         """Flask instantiation."""
@@ -55,13 +59,14 @@ class Factory(object):
     def set_celery(self, **kwargs):
         """Celery instantiation."""
         # Celery instance creation
-        self.celery = Celery(__name__, broker=self.flask.config['CELERY_BROKER_URL'], backend=self.flask.config['CELERY_RESULT_BACKEND'])
+        self.celery = Celery(__name__, broker=self.config['CELERY_BROKER_URL'], backend=self.config['CELERY_RESULT_BACKEND'])
 
         # Celery Configuration
-        self.celery.conf.update(self.flask.config)
+        self.celery.conf.update(self.config)
 
         return self.celery
 
-    def register(self, blueprint):
-        """Register a specified blueprint."""
+    def register_blueprint(self, blueprint):
+        """Register a specified api blueprint."""
         self.flask.register_blueprint(blueprint)
+
