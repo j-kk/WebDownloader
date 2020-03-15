@@ -29,7 +29,7 @@ All the configuration should be specified in .env files (Just modify values from
 Assuming redis is working, you can start celery workers:
 
 ```
-    celery -A app.jobs.celery worker --loglevel=INFO
+    celery -A WebDownloader.jobs.celery worker --loglevel=INFO
 ```
 
 ### Usage with Docker-compose
