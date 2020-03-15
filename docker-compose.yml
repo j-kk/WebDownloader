@@ -25,7 +25,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A app.run.celery worker --loglevel=INFO
+    command: celery -A WebDownloader.run.celery worker --loglevel=INFO
     links:
       - redis
     volumes:

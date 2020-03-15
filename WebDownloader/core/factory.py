@@ -2,13 +2,13 @@
 from flask import Flask
 from celery import Celery
 
-from app.core.config import config
+from WebDownloader.core.config import config
 
 # System based imports
 import os
 
 class Module():
-    """Build the instances needed for the app."""
+    """Build the instances needed for the WebDownloader."""
     config = {}
 
     def __init__(self, environment='default'):

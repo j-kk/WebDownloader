@@ -14,13 +14,18 @@ There are two ways to use this package - manual or docker. To install, simply ty
 
 It's recommended to run the app using docker, however for development purposes, it may be a bit painfull.
 
-To start the application, you can use the run.py script:
+Firstly, you need redis server to enqueue tasks and save their state. You can do it with
+```
+    docker run -d -p 6379:6379 redis
+```
+
+To start the flask application, you can use the run.py script:
 
 ```
     python run.py
 ```
 
-However, for correct work Redis server is needed. Configuration should be specified in .env files.
+All the configuration should be specified in .env files (Just modify values from example.env and load the env file before launching with ```source```).
 Assuming redis is working, you can start celery workers:
 
 ```

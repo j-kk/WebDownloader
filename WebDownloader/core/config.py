@@ -12,7 +12,7 @@ class Config(object):
 
     TITLE = "Text and images downloader from webpages"
     VERSION = "0.1.0"
-    DESCRIPTION = "An REST app to download images and text from webpages. Made with flask & celery."
+    DESCRIPTION = "An REST WebDownloader to download images and text from webpages. Made with flask & celery."
 
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'

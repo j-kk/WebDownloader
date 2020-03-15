@@ -2,10 +2,10 @@ from flask import Blueprint
 from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
 
-from app.jobs import module
-from app.jobs.helpers.webres import get_url
-from app.jobs.task_management import check_state, find_result
-from app.jobs.tasks import textTask, imageTask
+from WebDownloader.jobs import module
+from WebDownloader.jobs.helpers.webres import get_url
+from WebDownloader.jobs.task_management import check_state, find_result
+from WebDownloader.jobs.tasks import textTask, imageTask
 
 taskHandlerBp = Blueprint(name='taskHandler', import_name='tHandler')
 api = Api(taskHandlerBp)
@@ -90,7 +90,8 @@ class GetResult(Resource):
         args = self.reqparse.parse_args()
         task_id = args['id']
         if check_state(task_id) == 'SUCCESS':
-            if (file := find_result(task_id)) is not None:
+            file = find_result(task_id)
+            if file is not None:
                 return send_from_directory(module.config['DATA_LOCATION'], file)
 
         return {}, 404

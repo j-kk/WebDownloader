@@ -1,5 +1,5 @@
 """Initialization module of the package."""
-from app.core import module
+from WebDownloader.core import module
 
 
 print(module)
