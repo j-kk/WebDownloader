@@ -4,7 +4,9 @@ import requests
 from pathlib import Path
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-#TODO add timeout to avoid deadlocks!
+
+CONNECT_TIMEOUT=5.0
+READ_TIMEOUT=15.0
 
 def get_url(url: str) -> str:
     url = re.sub('\n', '', url)
@@ -27,7 +29,7 @@ class WebImage(object):
         if not dir_path.parent.is_dir():
             dir_path.parent.mkdir(parents=True)
         # download the body of response by chunk, not immediately
-        response = requests.get(self.url, stream=True)
+        response = requests.get(self.url, stream=True, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT))
 
         # get the total file size
         file_size = int(response.headers.get("Content-Length", 0))
@@ -64,7 +66,7 @@ class Website(object):
 
     def download(self):
         self.url = get_url(self.url)
-        self.response = requests.get(self.url)
+        self.response = requests.get(self.url, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT))
         self.soup = BeautifulSoup(self.response.text, "html.parser")
 
 
