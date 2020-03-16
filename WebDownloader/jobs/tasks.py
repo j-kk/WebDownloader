@@ -31,7 +31,7 @@ def textTask(self, site_url: str):
     """
     website = Website(url=site_url)
     website.download()
-    output_name = module.config['DATA_LOCATION'].joinpath(self.request.id)
+    output_name = module.config['DATA_LOCATION'].joinpath(self.request.id + '.txt')
     with open(output_name, 'w') as file:
         file.write(website.extractTextFromWebsite())
 

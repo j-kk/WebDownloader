@@ -69,10 +69,17 @@ class Website(object):
 
 
     def extractTextFromWebsite(self):
-        text = re.sub("\n", '', self.response.text)
-        text = re.sub(r"<script(.|\s)+?</script>", '', text)
-        text = re.sub('<.*?>', ' ', text)
-        text = re.sub(r"<style(.|\s)+?</style>", '', text)
+        for script in self.soup(['script', 'style']):
+            script.extract()
+
+        text = self.soup.get_text()
+
+        lines = (line.strip() for line in text.splitlines())
+
+        chunks = (phrase.strip() for line in lines for phrase in line.split(' '))
+
+        text = ' '.join(chunk for chunk in chunks if chunk)
+
         return text
 
     def getTitle(self) -> str:
