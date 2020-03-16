@@ -7,8 +7,4 @@ COPY . /app
 RUN pip3 install -U pip
 RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
-ENV APP_ENVIRONMENT development
-ENV FLASK_APP app
-ENV FLASK_DEBUG True
-
 WORKDIR /app

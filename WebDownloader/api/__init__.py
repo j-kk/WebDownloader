@@ -1,8 +1,6 @@
 """Initialization module of the package."""
 from WebDownloader.core import module
 
-
-print(module)
 # Enable flask instance
 module.set_flask()
 

@@ -59,14 +59,14 @@ class Module():
     def set_celery(self, **kwargs):
         """Celery instantiation."""
         # Celery instance creation
-        self.celery = Celery(__name__, broker=self.config['CELERY_BROKER_URL'], backend=self.config['CELERY_RESULT_BACKEND'])
+        self.celery = Celery(__name__, broker=self.config['CELERY_BROKER_URL'], backend=self.config['CELERY_RESULT_BACKEND'], **kwargs)
 
         # Celery Configuration
         self.celery.conf.update(self.config)
 
         return self.celery
 
-    def register_blueprint(self, blueprint):
+    def register_blueprint(self, blueprint, **kwargs):
         """Register a specified api blueprint."""
-        self.flask.register_blueprint(blueprint)
+        self.flask.register_blueprint(blueprint, **kwargs)
 

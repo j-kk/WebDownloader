@@ -3,7 +3,7 @@ from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
 
 from WebDownloader.jobs import module
-from WebDownloader.jobs.helpers.webres import get_url
+from WebDownloader.core.helpers.webres import get_url
 from WebDownloader.jobs.task_management import check_state, find_result
 from WebDownloader.jobs.tasks import textTask, imageTask
 

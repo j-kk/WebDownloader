@@ -4,7 +4,7 @@ import requests
 from pathlib import Path
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-
+#TODO add timeout to avoid deadlocks!
 
 def get_url(url: str) -> str:
     url = re.sub('\n', '', url)
