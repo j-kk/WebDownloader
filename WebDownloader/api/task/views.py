@@ -1,3 +1,4 @@
+import validators
 from flask import Blueprint
 from flask import send_from_directory
 from flask_restful import Api, Resource, reqparse
@@ -10,18 +11,6 @@ from WebDownloader.jobs.tasks import textTask, imageTask
 taskHandlerBp = Blueprint(name='taskHandler', import_name='tHandler')
 api = Api(taskHandlerBp)
 
-# website_url = api.model('URL', {
-#     'url': fields.Url(required=True, description='URL to website', absolute=True)
-# })
-#
-# task_id = api.model('ID', {
-#     'task_id': fields.String(required=True, description='Task ID')
-# })
-#
-# task_state = api.model('STATE', {
-#     'task_id': fields.String(required=True, description='Task ID'),
-#     'state': fields.String(required=True, description='Task state')
-# })
 
 @api.resource('/getText')
 class TextHandler(Resource):
@@ -31,16 +20,19 @@ class TextHandler(Resource):
                                    help = 'URL to website', action='append')
         super(TextHandler, self).__init__()
 
-    # @api.expect([website_url])
-    # @api.marshal_with(website_url)
     def post(self):
         args = self.reqparse.parse_args()
         ret = []
         for i, url in enumerate(args['url']):
             url = get_url(url)
+            if not validators.url(url):
+                continue
             task_id = textTask.delay(url).id
-            ret.append({'task_id': task_id})
-        return ret
+            ret.append({
+                'url': url,
+                'task_id': task_id
+            })
+        return ret, 201 if len(ret) > 0 else 406
 
 @api.resource('/getImages')
 class ImageHandler(Resource):
@@ -55,9 +47,15 @@ class ImageHandler(Resource):
         ret = []
         for i, url in enumerate(args['url']):
             url = get_url(url)
+            if not validators.url(url):
+                continue
             task_id = imageTask.delay(url).id
-            ret.append({'task_id':task_id})
-        return ret
+            ret.append({
+                'url': url,
+                'task_id': task_id
+            })
+
+        return ret, 201 if len(ret) > 0 else 406
 
 @api.resource('/checkState')
 class StateChecker(Resource):
@@ -76,7 +74,7 @@ class StateChecker(Resource):
                 'task_id': task_id,
                 'state': status
             })
-        return ret
+        return ret, 201 if len(ret) > 0 else 406
 
 @api.resource('/downloadResult')
 class GetResult(Resource):
@@ -88,10 +86,9 @@ class GetResult(Resource):
 
     def get(self):
         args = self.reqparse.parse_args()
-        task_id = args['id']
+        task_id = args['id'][0]
         if check_state(task_id) == 'SUCCESS':
-            file = find_result(task_id)
-            if file is not None:
-                return send_from_directory(module.config['DATA_LOCATION'], file)
+            file_name = find_result(task_id)
+            return send_from_directory(module.flask.static_folder, file_name)
 
         return {}, 404

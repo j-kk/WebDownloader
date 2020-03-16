@@ -1,3 +1,5 @@
+"""Initialization of the task's handler package"""
+
 from WebDownloader.core import module
 
 

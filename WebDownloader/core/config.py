@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+
 class Config(object):
     """Parent configuration class."""
 
@@ -18,7 +19,7 @@ class Config(object):
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
     BROKER_URL = CELERY_BROKER_URL
 
-    DATA_LOCATION = Path(os.getenv('DATA_LOCATION') if None else Path("./db"))
+    DATA_LOCATION = Path(os.getenv('DATA_LOCATION') if None else Path("./db").absolute())
 
 
 class DevelopmentConfig(Config):

@@ -7,6 +7,7 @@ from WebDownloader.core.config import config
 # System based imports
 import os
 
+
 class Module():
     """Build the instances needed for the WebDownloader."""
     config = {}
@@ -23,6 +24,7 @@ class Module():
         for key in dir(self._config_template):
             if key.isupper():
                 self.config[key] = getattr(self._config_template, key)
+
 
 
     @property
@@ -45,7 +47,7 @@ class Module():
     def set_flask(self, **kwargs):
         """Flask instantiation."""
         # Flask instance creation
-        self.flask = Flask(__name__, **kwargs)
+        self.flask = Flask(__name__, static_folder=self.config['DATA_LOCATION'], **kwargs)
 
         # Flask configuration
         self.flask.config.from_object(config[self._environment])
@@ -59,7 +61,8 @@ class Module():
     def set_celery(self, **kwargs):
         """Celery instantiation."""
         # Celery instance creation
-        self.celery = Celery(__name__, broker=self.config['CELERY_BROKER_URL'], backend=self.config['CELERY_RESULT_BACKEND'], **kwargs)
+        self.celery = Celery(__name__, broker=self.config['BROKER_URL'], backend=self.config['CELERY_RESULT_BACKEND'],
+                             **kwargs)
 
         # Celery Configuration
         self.celery.conf.update(self.config)
@@ -69,4 +72,3 @@ class Module():
     def register_blueprint(self, blueprint, **kwargs):
         """Register a specified api blueprint."""
         self.flask.register_blueprint(blueprint, **kwargs)
-
