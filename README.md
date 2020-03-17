@@ -25,11 +25,11 @@ To start the flask application, you can use the run.py script:
     python run.py
 ```
 
-All the configuration should be specified in .env files (Just modify values from example.env and load the env file before launching with ```source```).
+All the configuration should be specified in .env files (Just modify values from example.env and load the env file before launching with ```source & export DATA_LOCATION```).
 Assuming redis is working, you can start celery workers:
 
 ```
-    celery -A WebDownloader.jobs.celery worker --loglevel=INFO
+    celery -A WebDownloader.jobs.worker.celery worker --loglevel=INFO
 ```
 
 ### Usage with Docker-compose

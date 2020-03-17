@@ -1,16 +1,16 @@
 """Factory module."""
 from flask import Flask
-from celery import Celery
 
-from WebDownloader.core.config import config
-
+from WebDownloader.core.config import Config
 # System based imports
 import os
+
+from WebDownloader.jobs.celery import CeleryServer
 
 
 class Module():
     """Build the instances needed for the WebDownloader."""
-    config = {}
+    config: Config
 
     def __init__(self, environment='default'):
         """Initialize Factory with the proper environment."""
@@ -19,12 +19,7 @@ class Module():
         if not self._environment:
             self._environment = environment
 
-        self._config_template = config[self._environment]
-
-        for key in dir(self._config_template):
-            if key.isupper():
-                self.config[key] = getattr(self._config_template, key)
-
+        self.config = Config(self._environment)
 
 
     @property
@@ -33,24 +28,19 @@ class Module():
         return self._environment
 
     @environment.setter
-    def environment(self, environment):
-        # Update environment protected variable
-        self._environment = environment
+    def environment(self, value):
+        self._environment = value
 
-        # Update Flask configuration (if enabled)
-        if self.flask:
-            self.flask.config.from_object(config[self._environment])
+    def __getitem__(self, item):
+        return self.config[item]
 
-        # Update Celery Configuration
-        self.celery.conf.update(self.config)
-
-    def set_flask(self, **kwargs):
+    def set_flask(self, **kwargs) -> Flask:
         """Flask instantiation."""
         # Flask instance creation
-        self.flask = Flask(__name__, static_folder=self.config['DATA_LOCATION'], **kwargs)
+        self.flask = Flask(__name__, static_folder=self.config.opt['DATA_LOCATION'], **kwargs)
 
         # Flask configuration
-        self.flask.config.from_object(config[self._environment])
+        self.flask.config.from_object(self.config)
 
         # Swagger documentation
         self.flask.config.SWAGGER_UI_DOC_EXPANSION = 'list'
@@ -58,17 +48,14 @@ class Module():
 
         return self.flask
 
-    def set_celery(self, **kwargs):
+    def set_celery(self, **kwargs) -> CeleryServer:
         """Celery instantiation."""
         # Celery instance creation
-        self.celery = Celery(__name__, broker=self.config['BROKER_URL'], backend=self.config['CELERY_RESULT_BACKEND'],
-                             **kwargs)
-
-        # Celery Configuration
-        self.celery.conf.update(self.config)
+        self.celery = CeleryServer(self.config, **kwargs)
 
         return self.celery
 
     def register_blueprint(self, blueprint, **kwargs):
         """Register a specified api blueprint."""
         self.flask.register_blueprint(blueprint, **kwargs)
+

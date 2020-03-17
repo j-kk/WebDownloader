@@ -1,7 +1,5 @@
-from WebDownloader.api import module
+from WebDownloader.api.app import flask
 
 # Actually run the application
-flask = module.flask
-
 if __name__ == '__main__':
     flask.run()

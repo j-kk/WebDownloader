@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 
-class Config(object):
+class ConfigTemplate(object):
     """Parent configuration class."""
 
     DEBUG = False
@@ -15,20 +15,30 @@ class Config(object):
     VERSION = "0.1.0"
     DESCRIPTION = "An REST WebDownloader to download images and text from webpages. Made with flask & celery."
 
-    CELERY_BROKER_URL = 'redis://localhost:6379/0'
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-    BROKER_URL = CELERY_BROKER_URL
+    CELERY_BROKER_URL: str
+    CELERY_RESULT_BACKEND: str
+    BROKER_URL: str
 
-    DATA_LOCATION = Path(os.getenv('DATA_LOCATION') if None else Path("./db").absolute())
+    DATA_LOCATION: str
+
+    def __init__(self):
+        self.CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL') if None else 'redis://localhost:6379/0'
+        self.CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND') if None else 'redis://localhost:6379/0'
+        self.BROKER_URL = self.CELERY_BROKER_URL
+
+        if os.getenv('DATA_LOCATION') is None:
+            raise Exception('DATA_LOCATION not set!')
+
+        self.DATA_LOCATION = Path(os.getenv('DATA_LOCATION'))
 
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig(ConfigTemplate):
     """Configurations for Development."""
 
     DEBUG = True
 
 
-class TestingConfig(Config):
+class TestingConfig(ConfigTemplate):
     """Configurations for Testing."""
 
     TESTING = True
@@ -37,27 +47,41 @@ class TestingConfig(Config):
     CELERY_ALWAYS_EAGER = True
 
 
-class StagingConfig(Config):
-    """Configurations for Staging."""
 
-    DEBUG = True
-
-
-class ProductionConfig(Config):
+class ProductionConfig(ConfigTemplate):
     """Configurations for Production."""
 
     DEBUG = False
     TESTING = False
 
-    CELERY_BROKER_URL = 'redis://redis:6379/0'
-    CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
-    BROKER_URL = CELERY_BROKER_URL
+    def __init__(self):
+        super().__init__()
+        self.CELERY_BROKER_URL = 'redis://redis:6379/0'
+        self.CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+        self.BROKER_URL = self.CELERY_BROKER_URL
 
 
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
-    'staging': StagingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig
 }
+
+
+class Config(object):
+
+    def __init__(self, environment):
+        """Initialize Config with the proper environment."""
+        # Get the running environment
+        self.environment = environment
+
+        # Get variables from template
+        self._config_template = config[self.environment]()
+        self.opt = {}
+        for key in dir(self._config_template):
+            if key.isupper():
+                self.opt[key] = getattr(self._config_template, key)
+
+    def __getitem__(self, item):
+        return self.opt[item]

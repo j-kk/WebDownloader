@@ -9,16 +9,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python3 -m flask run --host 0.0.0.0
+    working_dir: /app
+    command: gunicorn -b 0.0.0.0:5000 run:flask
     restart: always
     ports:
-      - "5000:5000"
+      - "5000:80"
     links:
       - redis
     depends_on:
       - redis
     volumes:
       - data-volume:/db
+      - .:/app
     env_file:
       - cfg.env
 
@@ -27,7 +29,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A WebDownloader.jobs.celery worker --loglevel=INFO
+    command: celery -A WebDownloader.jobs.worker.celery worker --loglevel=INFO
     depends_on:
       - redis
     links:
@@ -35,7 +37,7 @@ services:
     volumes:
       - data-volume:/db
     env_file:
-      - cfg.env
+      - docker.env
 
 
 volumes:
