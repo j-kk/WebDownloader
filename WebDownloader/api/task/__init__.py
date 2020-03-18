@@ -3,15 +3,14 @@ from flask import Blueprint
 from flask_restful import Api
 
 from WebDownloader.api.task.views import TextHandler, ImageHandler, StateChecker, GetResult
-from WebDownloader.jobs.celery import CeleryServer
-
+from WebDownloader.jobs.celery import CeleryClient
 
 
 class TaskView(object):
 
-    def createBlueprint(self, flaskInstance: flask, celery: CeleryServer):
+    def createBlueprint(self, flaskInstance: flask, celery: CeleryClient):
         kwargs = {
-            'celery': celery,
+            'celeryClient': celery,
             'flaskInstance': flaskInstance
         }
         self.api.add_resource(TextHandler, '/getText', resource_class_kwargs=kwargs)

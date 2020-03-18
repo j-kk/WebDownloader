@@ -1,11 +1,12 @@
 """Factory module."""
-from flask import Flask
-
-from WebDownloader.core.config import Config
 # System based imports
 import os
 
-from WebDownloader.jobs.celery import CeleryServer
+from celery import Celery
+from flask import Flask
+
+from WebDownloader.core.config import Config
+from WebDownloader.jobs.celery import CeleryClient
 
 
 class Module():
@@ -48,12 +49,12 @@ class Module():
 
         return self.flask
 
-    def set_celery(self, **kwargs) -> CeleryServer:
+    def set_celery(self, **kwargs) -> Celery:
         """Celery instantiation."""
         # Celery instance creation
-        self.celery = CeleryServer(self.config, **kwargs)
+        self.celeryClient = CeleryClient(self.config, **kwargs)
 
-        return self.celery
+        return self.celeryClient.celery
 
     def register_blueprint(self, blueprint, **kwargs):
         """Register a specified api blueprint."""

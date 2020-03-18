@@ -13,7 +13,7 @@ class ConfigTemplate(object):
 
     TITLE = "Text and images downloader from webpages"
     VERSION = "0.1.0"
-    DESCRIPTION = "An REST WebDownloader to download images and text from webpages. Made with flask & celery."
+    DESCRIPTION = "An REST WebDownloader to download images and text from webpages. Made with flask & celeryClient."
 
     CELERY_BROKER_URL: str
     CELERY_RESULT_BACKEND: str
@@ -47,7 +47,6 @@ class TestingConfig(ConfigTemplate):
     CELERY_ALWAYS_EAGER = True
 
 
-
 class ProductionConfig(ConfigTemplate):
     """Configurations for Production."""
 
@@ -70,6 +69,11 @@ config = {
 
 
 class Config(object):
+    """App configuration specification,
+        gets information from env variables
+        or from template
+
+    """
 
     def __init__(self, environment):
         """Initialize Config with the proper environment."""
@@ -82,6 +86,9 @@ class Config(object):
         for key in dir(self._config_template):
             if key.isupper():
                 self.opt[key] = getattr(self._config_template, key)
+
+        if not self.opt['DATA_LOCATION'].is_dir():
+            self.opt['DATA_LOCATION'].mkdir()
 
     def __getitem__(self, item):
         return self.opt[item]

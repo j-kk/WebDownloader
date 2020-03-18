@@ -1,8 +1,9 @@
 import re
-import validators
-import requests
 from pathlib import Path
 from urllib.parse import urljoin
+
+import requests
+import validators
 from bs4 import BeautifulSoup
 
 CONNECT_TIMEOUT = 5.0
@@ -43,9 +44,8 @@ class WebImage(object):
         response = requests.get(self.url, stream=True, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT))
 
         # get the file name
-        filename = dir_path.joinpath(Path(self.url.split("/")[-1]))
+        filename = dir_path.joinpath(Path(self.url.split("/")[-1][:32]))
 
-        # progress bar, changing the unit to bytes instead of iteration (default by tqdm)
         with open(filename, "wb") as file:
             for chunk in response.iter_content(chunk_size=8196):
                 if chunk:  # filter out keep-alive chunks

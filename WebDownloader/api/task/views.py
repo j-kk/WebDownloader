@@ -4,7 +4,7 @@ from flask import send_from_directory
 from flask_restful import Resource, reqparse
 
 from WebDownloader.core.helpers.webres import get_url
-from WebDownloader.jobs.celery import CeleryServer
+from WebDownloader.jobs.celery import CeleryClient
 from WebDownloader.jobs.tasks import ExtendedTask
 
 
@@ -41,20 +41,19 @@ class TextHandler(TaskHandler):
     Handles textTask requests
     """
 
-    def __init__(self, celery: CeleryServer, **kwargs):
-        super().__init__(task=celery.textTask)
+    def __init__(self, celeryClient: CeleryClient, **kwargs):
+        super().__init__(task=celeryClient.textTask)
 
 
 class ImageHandler(TaskHandler):
-    def __init__(self, celery: CeleryServer, **kwargs):
-        super().__init__(task=celery.imageTask)
-
+    def __init__(self, celeryClient: CeleryClient, **kwargs):
+        super().__init__(task=celeryClient.imageTask)
 
 
 class IDHandler(Resource):
 
-    def __init__(self, celery: CeleryServer):
-        self.celery = celery
+    def __init__(self, celeryClient: CeleryClient):
+        self.celeryClient = celeryClient
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('id', type=str, required=True,
                                    help='Task ID', action='append')
@@ -67,8 +66,8 @@ class StateChecker(IDHandler):
     Handles task state checking
     """
 
-    def __init__(self, celery: CeleryServer, **kwargs):
-        super().__init__(celery)
+    def __init__(self, celeryClient: CeleryClient, **kwargs):
+        super().__init__(celeryClient)
 
     def post(self):
         """Checks task's states
@@ -77,7 +76,7 @@ class StateChecker(IDHandler):
         args = self.reqparse.parse_args()
         ret = []
         for task_id in args['id']:
-            status = self.celery.check_state(task_id)
+            status = self.celeryClient.check_state(task_id)
             ret.append({
                 'task_id': task_id,
                 'state': status
@@ -91,9 +90,9 @@ class GetResult(IDHandler):
     """
     flaskInstance: flask
 
-    def __init__(self, celery: CeleryServer, flaskInstance: flask):
-        super().__init__(celery)
-        self.flaskInstance = flaskInstance #TODO change
+    def __init__(self, celeryClient: CeleryClient, flaskInstance: flask):
+        super().__init__(celeryClient)
+        self.flaskInstance = flaskInstance  # TODO change
 
     def get(self):
         """Returns task result
@@ -101,8 +100,8 @@ class GetResult(IDHandler):
         """
         args = self.reqparse.parse_args()
         task_id = args['id'][0]
-        if self.celery.check_state(task_id) == 'SUCCESS':
-            file_name = self.celery.find_result(task_id)
+        if self.celeryClient.check_state(task_id) == 'SUCCESS':
+            file_name = self.celeryClient.find_result(task_id)
             return send_from_directory(self.flaskInstance.static_folder, file_name)  # TODO replace beacouse it's slow
 
         return {}, 404
