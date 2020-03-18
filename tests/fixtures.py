@@ -55,7 +55,7 @@ def complete_app(module_schema):
     # Create task view
     taskView = TaskView()
     # Register the api blueprint
-    module_schema.register_blueprint(taskView.createBlueprint(module_schema.flask, module_schema.celeryClient.celery))
+    module_schema.register_blueprint(taskView.createBlueprint(module_schema.flask, module_schema.celeryClient))
     yield module_schema
 
 
@@ -63,5 +63,7 @@ def complete_app(module_schema):
 def flask_app_client(complete_app):
     """Fixture of application client."""
     app = complete_app.flask
+    app.config['TESTING'] = True
+    app.config['DATA_LOCATION'] = complete_app['DATA_LOCATION']
     app.test_client_class = FlaskClient
     return app.test_client()

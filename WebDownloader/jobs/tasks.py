@@ -69,5 +69,5 @@ class ImageTask(ExtendedTask):
 
         # pack to zip and remove tmp catalog
         zip_path = self.config['DATA_LOCATION'].joinpath(str(self.request.id))
-        shutil.make_archive(zip_path, 'zip', dir_path)
+        shutil.make_archive(zip_path, 'zip', self.config['DATA_LOCATION'], str(self.request.id))
         shutil.rmtree(dir_path)

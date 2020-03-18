@@ -102,6 +102,6 @@ class GetResult(IDHandler):
         task_id = args['id'][0]
         if self.celeryClient.check_state(task_id) == 'SUCCESS':
             file_name = self.celeryClient.find_result(task_id)
-            return send_from_directory(self.flaskInstance.static_folder, file_name)  # TODO replace beacouse it's slow
+            return send_from_directory(self.flaskInstance.static_folder, file_name)  # TODO replace becouse it's slow
 
         return {}, 404

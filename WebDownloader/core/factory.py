@@ -38,7 +38,7 @@ class Module():
     def set_flask(self, **kwargs) -> Flask:
         """Flask instantiation."""
         # Flask instance creation
-        self.flask = Flask(__name__, static_folder=self.config.opt['DATA_LOCATION'], **kwargs)
+        self.flask = Flask(__name__, static_folder=self.config.opt['DATA_LOCATION'].absolute(), **kwargs)
 
         # Flask configuration
         self.flask.config.from_object(self.config)

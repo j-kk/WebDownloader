@@ -51,12 +51,13 @@ The RESTful API offers 4 methods:
 
 - `/getText?url=example.com` - downloads all text from website and returns taskID
 - `/getImages?url=example.com` - downloads all images from website and returns taskID
-- `/checkState?task_id=1234` - returns task state
-- `/downloadResult?task_id=1234` - returns task result
+- `/checkState?id=1234` - returns task state
+- `/downloadResult?id=1234` - returns task result
 
 ### TODOs
 
 - Celery doesn't distinguish between pending and not existing tasks - add 'after_send' handler
 - Improve imageTask to download images concurrently
 - Unify tests with some class etc
+- fixture redis 
 
