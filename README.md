@@ -61,3 +61,11 @@ The RESTful API offers 4 methods:
 - Unify tests with some class etc
 - fixture redis 
 
+### Comment
+
+In my honest opinion, it was quite a big recruitment task. It was quite difficult, because in a week I had to study celery from ground up,
+revise flask & create whole backend in less then week (because studies). If I had more time, I would:
+- fix test_functional unzipping - because it works, but shutil.unpack_archive has standarization dilemma
+- Unify tests in some classes
+- do TODOs ;p
+- and clearify the code ;)
