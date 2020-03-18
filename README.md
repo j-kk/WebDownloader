@@ -63,8 +63,9 @@ The RESTful API offers 4 methods:
 
 ### Comment
 
-In my honest opinion, it was quite a big recruitment task. It was quite difficult, because in a week I had to study celery from ground up,
-revise flask & create whole backend in less then week (because studies). If I had more time, I would:
+In my honest opinion, it was quite a big recruitment task. It wasn't difficult, but it required some knowledge
+in celery (which was new to me) & flask (which I know a bit). I had to study it a bit, what cost me a bit of time 
+(which is preciouse duries studies, especially remote :/ ). If I had more time, I would:
 - fix test_functional unzipping - because it works, but shutil.unpack_archive has standarization dilemma
 - Unify tests in some classes
 - do TODOs ;p
