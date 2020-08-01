@@ -1,26 +1,15 @@
-import re
+import time
+import furl
 from pathlib import Path
 from urllib.parse import urljoin
-
+import networkx as nx
+import queue
 import requests
 import validators
 from bs4 import BeautifulSoup
 
 CONNECT_TIMEOUT = 5.0
 READ_TIMEOUT = 15.0
-
-
-def get_url(url: str) -> str:
-    """Adds http prefix to url if not present
-
-    :param url: url to website
-    :return: url with http prefix
-    """
-    url = re.sub('\n', '', url)
-    if not re.match('http://', url) and not re.match('https://', url):
-        url = 'http://' + url
-    return url
-
 
 class WebImage(object):
     """Representation of image on website
@@ -111,3 +100,44 @@ class Website(object):
             if validators.url(img_url):
                 images.append(WebImage(img_url))
         return images
+
+    def createLinkMap(self, depth) -> nx.Graph:
+        G = nx.Graph()
+        visited = set(self.url)
+        q = queue.Queue()
+        q.put((self, 0))
+        G.add_node(self.url)
+        while not q.empty():
+            website, site_depth = q.get()
+            try:
+                website.download()
+            except requests.exceptions.InvalidURL as exc:
+                print(f'Invalid url {website.url}, error: {exc}')
+                continue
+            except requests.exceptions.ConnectionError as exc:
+                time.sleep(2)
+                print(f'Max retries! Link: {website.url}, error: {exc}')
+                q.put((self, site_depth))
+                continue
+            links = website.extractLinksFromWebsite()
+            for link in links:
+                if link.endswith('pdf'):
+                    continue
+                if link not in visited:
+                    visited.add(link)
+                    if site_depth < depth:
+                        website = Website(link)
+                        q.put((website, site_depth + 1))
+                    G.add_node(link)
+                    G.add_edge(website.url, link)
+        return G
+
+    def extractLinksFromWebsite(self) -> [str]:
+        try:
+            raw_links = self.soup.find_all('a')
+            links = list(map(lambda link: link.get('href'), raw_links))
+            links = filter(lambda link: type(link) == str, links)
+            complete_links = map(lambda link: link if link.startswith(('http', 'https', 'www')) else urljoin(self.url, link), links)
+            return map(lambda link: furl.furl(link).remove(args=True, fragment=True).url, complete_links)
+        except Exception as err:
+            raise err

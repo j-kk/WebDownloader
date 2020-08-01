@@ -4,7 +4,7 @@ import threading
 import pytest
 from flask.testing import FlaskClient
 
-from WebDownloader.api.task import TaskView
+from WebDownloader.backend.api import TaskView
 from WebDownloader.core.factory import Module
 
 Module.environment = 'testing'
@@ -52,9 +52,9 @@ def complete_app(module_schema):
     """Fixture of application creation."""
     module_schema.set_flask()
     module_schema.set_celery()
-    # Create task view
+    # Create routes view
     taskView = TaskView()
-    # Register the api blueprint
+    # Register the backend blueprint
     module_schema.register_blueprint(taskView.createBlueprint(module_schema.flask, module_schema.celeryClient))
     yield module_schema
 

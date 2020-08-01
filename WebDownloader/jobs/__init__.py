@@ -1,1 +1,1 @@
-"""Initialization of the task's handler package"""
+"""Initialization of the routes's handler package"""

@@ -22,6 +22,8 @@ class ConfigTemplate(object):
     DATA_LOCATION: str
 
     def __init__(self):
+        self.REDIS_URL = os.getenv('REDIS_URL') if None else 'localhost'
+        self.REDIS_PORT = int(os.getenv('REDIS_PORT')) if None else 6379
         self.CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL') if None else 'redis://localhost:6379/0'
         self.CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND') if None else 'redis://localhost:6379/0'
         self.BROKER_URL = self.CELERY_BROKER_URL
@@ -55,8 +57,10 @@ class ProductionConfig(ConfigTemplate):
 
     def __init__(self):
         super().__init__()
-        self.CELERY_BROKER_URL = 'redis://redis:6379/0'
-        self.CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+        self.REDIS_URL = 'redis'
+        self.REDIS_PORT = 6379
+        self.CELERY_BROKER_URL = 'redis://redis:6379/'
+        self.CELERY_RESULT_BACKEND = 'redis://redis:6379/'
         self.BROKER_URL = self.CELERY_BROKER_URL
 
 

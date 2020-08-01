@@ -46,7 +46,7 @@ def _test_get_images_content(flask_app_client, url: str, data_location, content_
     response = flask_app_client.open(method='POST', path='/getImages', data=dict(url=url))
     assert response.status_code == 201
     task_id = response.data.decode().split('"')[-2]
-    time.sleep(10)
+    time.sleep(150)
     response = flask_app_client.open(method='GET', path='/downloadResult', data=dict(id=task_id))
     assert response.status_code == 200
     zip_path = data_location.joinpath(Path(task_id + '.zip'))
