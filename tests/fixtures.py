@@ -2,7 +2,7 @@ import os
 import threading
 
 import pytest
-from flask.testing import FlaskClient
+from app.testing import FlaskClient
 
 from WebDownloader.backend.api import TaskView
 from WebDownloader.core.factory import Module
@@ -15,7 +15,7 @@ Module.environment = 'testing'
 @pytest.yield_fixture(scope='session')
 def module_schema():
     """Fixture of factory with testing environment."""
-    os.environ['DATA_LOCATION'] = './db'
+    os.environ['DATA_LOCATION'] = './WebDownloader'
     os.environ['APP_ENVIRONMENT'] = 'testing'  # create module
 
     yield Module(environment='testing')
@@ -52,7 +52,7 @@ def complete_app(module_schema):
     """Fixture of application creation."""
     module_schema.set_flask()
     module_schema.set_celery()
-    # Create routes view
+    # Create api view
     taskView = TaskView()
     # Register the backend blueprint
     module_schema.register_blueprint(taskView.createBlueprint(module_schema.flask, module_schema.celeryClient))

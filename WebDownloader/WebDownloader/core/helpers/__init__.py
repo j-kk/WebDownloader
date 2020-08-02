@@ -1,0 +1,1 @@
+from .webres import get_url

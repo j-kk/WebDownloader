@@ -19,7 +19,7 @@ class ExtendedTask(Task):
 
 
 class TextTask(ExtendedTask):
-    """Text download routes
+    """Text download api
         Downloads all text from website
         Requires app configuration
     """
@@ -29,7 +29,7 @@ class TextTask(ExtendedTask):
 
     def run(self, site_url: str, *args, **kwargs):
         """
-        :param self: routes property
+        :param self: api property
         :param site_url: url to website
         """
         # download website
@@ -44,7 +44,7 @@ class TextTask(ExtendedTask):
 
 
 class ImageTask(ExtendedTask):
-    """Images download routes
+    """Images download api
         Downloads all images from website
         Requires app configuration
     """
@@ -55,7 +55,7 @@ class ImageTask(ExtendedTask):
     def run(self, site_url: str, *args, **kwargs):
         """Downloads all images from website and saves them to zip archive
 
-        :param self: routes property
+        :param self: api property
         :param site_url: url to website
         """
         # download website

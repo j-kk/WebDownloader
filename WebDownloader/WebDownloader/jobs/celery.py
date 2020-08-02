@@ -33,12 +33,12 @@ class CeleryClient(object):
         return self._celery
 
     def check_state(self, task_id: str):
-        """Checks routes's state
+        """Checks api's state
         Because all tasks are PENDING by default, it's replaced with SENT,
         (PENDING means NOT FOUND)
 
-        :param task_id: routes's id
-        :return: routes's status
+        :param task_id: api's id
+        :return: api's status
         """
         status = self.celery.AsyncResult(task_id).status
         return status
@@ -47,7 +47,7 @@ class CeleryClient(object):
     def find_result(self, task_id: str) -> str:
         """Specifies name of result file
 
-        :param task_id: routes's id
+        :param task_id: api's id
         :return: name of result file
         """
         db = self.config['DATA_LOCATION']

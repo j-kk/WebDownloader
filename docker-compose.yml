@@ -7,10 +7,10 @@ services:
 
   api:
     build:
-      context: .
-      dockerfile: Backend/Dockerfile
+      context: WebDownloader
+      dockerfile: Dockerfile
     working_dir: /app
-    command: gunicorn -b 0.0.0.0:5000 run:flask
+    command: gunicorn -b 0.0.0.0:5000 app:flaskInstance
     restart: always
     ports:
       - "5000:5000"
@@ -28,7 +28,6 @@ services:
       context: Frontend
       dockerfile: Dockerfile
     working_dir: /app
-    command: http-server dist
     restart: always
     ports:
       - "80:80"
@@ -39,10 +38,10 @@ services:
 
   worker:
     build:
-      context: .
-      dockerfile: Worker/Dockerfile
-    command: celery -A worker.celery worker --loglevel=INFO
-    working_dir: /app
+      context: WebDownloader
+      dockerfile: Dockerfile
+    command: celery -A WebDownloader.jobs.worker.celery worker --loglevel=INFO
+
     depends_on:
       - redis
     links:

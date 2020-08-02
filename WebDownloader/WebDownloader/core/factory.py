@@ -2,9 +2,11 @@
 # System based imports
 import os
 import redis
+from flask import Flask
+from flask_cors import CORS
 from celery import Celery
 
-from .config import Config
+from WebDownloader.core.config import Config
 from WebDownloader.jobs.celery import CeleryClient
 
 class Module():
@@ -33,6 +35,24 @@ class Module():
 
     def __getitem__(self, item):
         return self.config[item]
+
+    def set_flask(self, **kwargs):
+        """Flask instantiation."""
+        # Flask instance creation
+        self.flask = Flask(__name__, static_folder=str(self.config.opt['DATA_LOCATION'].absolute()), **kwargs)
+
+        # Flask configuration
+        self.flask.config.from_object(self.config)
+
+        # CORS
+        CORS(self.flask)
+
+        return self.flask
+
+
+    def register_blueprint(self, blueprint, **kwargs):
+        """Register a specified backend blueprint."""
+        self.flask.register_blueprint(blueprint, **kwargs)
 
     def set_celery(self, **kwargs) -> Celery:
         """Celery instantiation."""

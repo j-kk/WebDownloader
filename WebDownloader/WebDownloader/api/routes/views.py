@@ -1,15 +1,14 @@
-import redis
-from flask import Flask
-from flask import send_from_directory
+from redis.client import Redis
+from flask import Flask, send_from_directory
 from flask_restful import Resource, reqparse
 from WebDownloader.jobs.celery import CeleryClient
 
 class StateChecker(Resource):
     """
-    Handles routes state checking
+    Handles api state checking
     """
 
-    def __init__(self, celeryClient: CeleryClient, redisClient: redis.client.Redis, **kwargs):
+    def __init__(self, celeryClient: CeleryClient, redisClient: Redis, **kwargs):
         self.celeryClient = celeryClient
         self.redisClient = redisClient
         self.reqparse = reqparse.RequestParser()
@@ -18,7 +17,7 @@ class StateChecker(Resource):
         super().__init__()
 
     def post(self):
-        """Checks routes's states
+        """Checks api's states
         :return: tasks states
         """
         args = self.reqparse.parse_args()
@@ -53,8 +52,8 @@ class GetResult(Resource):
         super().__init__()
 
     def get(self, filename):
-        """Returns routes result
-        :return: routes result
+        """Returns api result
+        :return: api result
         """
         return send_from_directory(self.flaskInstance.static_folder, filename)  # TODO replace becouse it's slow
 

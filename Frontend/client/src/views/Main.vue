@@ -80,8 +80,6 @@
 
 import axios from 'axios';
 
-const apiUrl = 'http://127.0.0.1:5000';
-
 function pushToStorage(value) {
   const arrLength = parseInt(localStorage.getItem('arrLength'), 10) || 0;
   const key = `item${arrLength}`;
@@ -105,7 +103,11 @@ export default {
       webCrawlTaskForm: {
         url: '',
       },
+      apiUrl: '',
     };
+  },
+  created() {
+    this.apiUrl = `http://${window.location.hostname}:5000`;
   },
   methods: {
     showID(task, type) {
@@ -118,7 +120,7 @@ export default {
       });
     },
     submitTask(value, urlSuffix, taskName) {
-      const path = `${apiUrl}/${urlSuffix}`;
+      const path = `${this.apiUrl}/${urlSuffix}`;
       if (value.url.length > 0) {
         const payload = {
           url: value.url,
@@ -130,7 +132,7 @@ export default {
         }).catch((error) => {
           this.$notify({
             type: 'error',
-            title: 'Connection error with API server',
+            title: 'Connection error with Api server',
             text: error,
           });
         });

@@ -72,8 +72,6 @@
 <script>
 import axios from 'axios';
 
-const apiUrl = 'http://127.0.0.1:5000';
-
 function getStorage() {
   const arrLength = parseInt(localStorage.getItem('arrLength'), 10) || 0;
   const result = [];
@@ -97,6 +95,12 @@ function rmFromStorage(toRemoveId) {
     }
   }
 }
+function pushToStorage(value) {
+  const arrLength = parseInt(localStorage.getItem('arrLength'), 10) || 0;
+  const key = `item${arrLength}`;
+  localStorage.setItem(key, value);
+  localStorage.setItem('arrLength', JSON.stringify(arrLength + 1));
+}
 
 export default {
   name: 'Tasks',
@@ -108,50 +112,53 @@ export default {
     };
   },
   created() {
+    this.apiUrl = `http://${window.location.hostname}:5000`;
     this.tasksIds = getStorage();
     this.refreshAllTasks();
   },
   methods: {
     submitId() {
-      const url = `${apiUrl}/checkState`;
+      const url = `${this.apiUrl}/checkState`;
       const payload = {
         id: this.addTaskIdForm,
       };
-      axios.post(url, payload).then((result) => {
-        console.log(result);
+      axios.post(url, payload).then(() => {
+        pushToStorage(payload.id);
+        this.refreshAllTasks();
       }).catch((error) => {
         this.$notify({
           type: 'error',
-          title: 'Connection error with API server',
+          title: 'Connection error with Api server',
           text: error,
         });
       });
     },
     refreshAllTasks() {
+      const url = `${this.apiUrl}/checkState`;
       const payload = {
         id: [],
       };
       this.tasksIds.forEach((taskId) => {
         payload.id.push(taskId);
       });
-      const url = `${apiUrl}/checkState`;
-      axios.post(url, payload).then((res) => {
-        this.tasks = res.data;
-      }).catch((error) => {
-        if (error.response.status === 404) {
-          this.$notify({
-            type: 'error',
-            title: 'Task with given ID was not found!',
-            text: error,
-          });
-        } else {
-          this.$notify({
-            type: 'error',
-            title: 'Connection error with API server',
-            text: error,
-          });
-        }
-      });
+      axios.post(url, payload)
+        .then((res) => {
+          this.tasks = res.data;
+        }).catch((error) => {
+          if (error.response.status === 404) {
+            this.$notify({
+              type: 'error',
+              title: 'Task with given ID was not found!',
+              text: error,
+            });
+          } else {
+            this.$notify({
+              type: 'error',
+              title: 'Connection error with api server',
+              text: error,
+            });
+          }
+        });
     },
     removeTask(index) {
       rmFromStorage(this.tasksIds[index]);
@@ -165,7 +172,7 @@ export default {
       return this.tasks[index].state === 'SUCCESS';
     },
     download(index) {
-      window.location.href = `${apiUrl}/downloadResult/${this.tasks[index].filename}`;
+      window.location.href = `${this.apiUrl}/downloadResult/${this.tasks[index].filename}`;
     },
   },
 };

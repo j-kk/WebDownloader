@@ -1,8 +1,6 @@
-import flask
-import redis
-from flask import Blueprint
+from flask import Flask, Blueprint
 from flask_restful import Api
-
+from redis.client import Redis
 from .views import StateChecker, GetResult
 from .new_tasks import TextHandler, ImageHandler, WebCrawlHandler
 from WebDownloader.jobs.celery import CeleryClient
@@ -10,7 +8,7 @@ from WebDownloader.jobs.celery import CeleryClient
 
 class TaskView(object):
 
-    def createBlueprint(self, flaskInstance: flask, celery: CeleryClient, redisClient: redis.client.Redis):
+    def createBlueprint(self, flaskInstance: Flask, celery: CeleryClient, redisClient: Redis):
         kwargs = {
             'celeryClient': celery,
             'flaskInstance': flaskInstance,
@@ -27,10 +25,4 @@ class TaskView(object):
     def __init__(self):
         self.blueprint = Blueprint(name='taskHandler', import_name='tHandler')
         self.api = Api(self.blueprint)
-
-
-
-
-
-
 

@@ -1,5 +1,6 @@
 import time
 import furl
+import re
 from pathlib import Path
 from urllib.parse import urljoin
 import networkx as nx
@@ -10,6 +11,17 @@ from bs4 import BeautifulSoup
 
 CONNECT_TIMEOUT = 5.0
 READ_TIMEOUT = 15.0
+
+def get_url(url: str) -> str:
+    """Adds http prefix to url if not present
+
+    :param url: url to website
+    :return: url with http prefix
+    """
+    url = re.sub('\n', '', url)
+    if not re.match('http://', url) and not re.match('https://', url):
+        url = 'http://' + url
+    return url
 
 class WebImage(object):
     """Representation of image on website
