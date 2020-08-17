@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from celery import Celery
-from WebDownloader.core.config import Config
-from WebDownloader.jobs.tasks import ImageTask, TextTask, WebCrawlTask
+from core.config import config, Config
+
 
 class CeleryClient(object):
     """
@@ -11,20 +11,12 @@ class CeleryClient(object):
     _instance = None
 
     _celery: Celery
-    textTask: TextTask
-    imageTask: ImageTask
-    webCrawlTask: WebCrawlTask
 
     def __init__(self, config: Config, **kwargs):
         # save config & create celery
         self.config = config
         self._celery = Celery(__name__, broker=self.config['BROKER_URL'], backend=self.config['CELERY_RESULT_BACKEND'],
                               **kwargs)
-
-        # register tasks
-        self.textTask = self.celery.register_task(TextTask(self.config))
-        self.imageTask = self.celery.register_task(ImageTask(self.config))
-        self.webCrawlTask = self.celery.register_task(WebCrawlTask(self.config))
 
     @property
     def celery(self):
@@ -63,5 +55,8 @@ class CeleryClient(object):
     def get_result_name(self, task_id: str) -> str:
         return self.celery.AsyncResult(task_id).get()
 
-def set_celery(config: Config):
+
+def set_celery():
     return CeleryClient(config)
+
+cc = set_celery()

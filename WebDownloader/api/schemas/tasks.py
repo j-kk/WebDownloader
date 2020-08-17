@@ -1,8 +1,5 @@
 from marshmallow import Schema, fields, post_load
 
-from WebDownloader.core.helpers.webres import Website
-
-
 class TaskId(object):
     id: str
 
@@ -11,7 +8,7 @@ class TaskId(object):
 
 
 class TaskIdSchema(Schema):
-    id: fields.List(fields.String(), required=True)
+    id = fields.List(fields.String(), required=True)
 
     @post_load
     def make_task(self, data, **kwargs):
@@ -20,7 +17,7 @@ class TaskIdSchema(Schema):
 
 
 class WebsiteURLSchema(Schema):
-    url: fields.URL()
+    url = fields.List(fields.URL(), required=True)
     @post_load
     def make_url(self, data, **kwargs):
-        return Website(**data)
+        return data['url']

@@ -84,7 +84,7 @@ class Config(object):
         self.environment = environment
 
         # Get variables from template
-        self._config_template = config[self.environment]()
+        self._config_template = configTypes[self.environment]()
         self.opt = {}
         for key in dir(self._config_template):
             if key.isupper():
@@ -100,4 +100,6 @@ def set_config():
     _environment = os.getenv("APP_ENVIRONMENT")
     if not _environment:
         _environment = 'default'
-    return configTypes[_environment]()
+    return Config(_environment)
+
+config = set_config()
