@@ -5,8 +5,9 @@ import validators
 from flask_restful import Resource, reqparse
 
 from WebDownloader.core.helpers import get_url
-from WebDownloader.jobs.celery import CeleryClient
 from WebDownloader.jobs.tasks import ExtendedTask
+
+
 
 
 class TaskHandler(Resource):

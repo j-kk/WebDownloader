@@ -79,6 +79,7 @@
 /* eslint no-debugger: "warn" */
 
 import axios from 'axios';
+import qs from 'qs';
 
 function pushToStorage(value) {
   const arrLength = parseInt(localStorage.getItem('arrLength'), 10) || 0;
@@ -113,19 +114,24 @@ export default {
     showID(task, type) {
       pushToStorage(task.task_id);
       this.$notify({
-        // group: 'tasks',
         title: `New ${type} task added`,
         text: `ID: ${task.task_id}\nURL: ${task.url}`,
-        // icon: 'info_outline',
+        icon: 'info_outline',
       });
     },
     submitTask(value, urlSuffix, taskName) {
       const path = `${this.apiUrl}/${urlSuffix}`;
       if (value.url.length > 0) {
         const payload = {
-          url: value.url,
+          url: [value.url],
         };
-        axios.post(path, payload).then((result) => {
+        const options = {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          data: payload,
+          url: path,
+        };
+        axios(options).then((result) => {
           result.data.forEach((task) => {
             this.showID(task, 'text');
           });

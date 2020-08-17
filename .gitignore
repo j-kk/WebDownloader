@@ -134,3 +134,5 @@ dmypy.json
 db/
 
 env2/
+
+cfg.env

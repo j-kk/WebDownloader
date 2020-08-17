@@ -11,14 +11,17 @@ cycler
 decorator
 Flask
 Flask-Cors
+flask-redis
 Flask-RESTful
 furl
+gunicorn
 idna
 itsdangerous
 Jinja2
 kiwisolver
-kombu
+kombu==4.6.10
 MarkupSafe
+marshmallow
 matplotlib
 networkx
 numpy
@@ -31,6 +34,7 @@ redis
 requests
 six
 soupsieve
+typing-extensions
 urllib3
 validators
 vine

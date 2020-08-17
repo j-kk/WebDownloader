@@ -2,7 +2,6 @@
 import os
 from pathlib import Path
 
-
 class ConfigTemplate(object):
     """Parent configuration class."""
 
@@ -64,7 +63,7 @@ class ProductionConfig(ConfigTemplate):
         self.BROKER_URL = self.CELERY_BROKER_URL
 
 
-config = {
+configTypes = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
@@ -96,3 +95,9 @@ class Config(object):
 
     def __getitem__(self, item):
         return self.opt[item]
+
+def set_config():
+    _environment = os.getenv("APP_ENVIRONMENT")
+    if not _environment:
+        _environment = 'default'
+    return configTypes[_environment]()

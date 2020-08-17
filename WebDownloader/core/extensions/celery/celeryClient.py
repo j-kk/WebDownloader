@@ -4,11 +4,12 @@ from celery import Celery
 from WebDownloader.core.config import Config
 from WebDownloader.jobs.tasks import ImageTask, TextTask, WebCrawlTask
 
-
 class CeleryClient(object):
     """
         Celery with app specified configuration
     """
+    _instance = None
+
     _celery: Celery
     textTask: TextTask
     imageTask: ImageTask
@@ -61,3 +62,6 @@ class CeleryClient(object):
 
     def get_result_name(self, task_id: str) -> str:
         return self.celery.AsyncResult(task_id).get()
+
+def set_celery(config: Config):
+    return CeleryClient(config)

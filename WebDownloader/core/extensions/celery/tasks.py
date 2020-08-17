@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from celery import Task
 
 from WebDownloader.core.helpers.webres import Website
-from ..core.config import Config
+from WebDownloader.core.config import Config
 
 
 class ExtendedTask(Task):

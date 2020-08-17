@@ -8,9 +8,7 @@ RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 RUN pip3 install gunicorn
 
 
-COPY WebDownloader /app/WebDownloader
-COPY app.py /app
-RUN ls /app
+COPY . /app
 WORKDIR /app
 
 

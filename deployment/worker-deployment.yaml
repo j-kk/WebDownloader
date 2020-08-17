@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -v
+    kompose.version: 1.21.0 ()
+  creationTimestamp: null
+  labels:
+    io.kompose.service: worker
+  name: worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: worker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -v
+        kompose.version: 1.21.0 ()
+      creationTimestamp: null
+      labels:
+        io.kompose.service: worker
+    spec:
+      containers:
+      - args:
+        - celery
+        - -A
+        - core.jobs.worker.celery
+        - worker
+        - --loglevel=INFO
+        env:
+        - name: APP_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              key: APP_ENVIRONMENT
+              name: docker-env
+        - name: DATA_LOCATION
+          valueFrom:
+            configMapKeyRef:
+              key: DATA_LOCATION
+              name: docker-env
+        - name: FLASK_APP
+          valueFrom:
+            configMapKeyRef:
+              key: FLASK_APP
+              name: docker-env
+        - name: FLASK_DEBUG
+          valueFrom:
+            configMapKeyRef:
+              key: FLASK_DEBUG
+              name: docker-env
+        image: worker
+        imagePullPolicy: ""
+        name: worker
+        resources: {}
+        volumeMounts:
+        - mountPath: /db
+          name: data-volume
+        workingDir: /app
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: data-volume
+status: {}

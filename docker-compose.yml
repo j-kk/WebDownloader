@@ -9,8 +9,8 @@ services:
     build:
       context: WebDownloader
       dockerfile: Dockerfile
-    working_dir: /app
-    command: gunicorn -b 0.0.0.0:5000 app:flaskInstance
+    working_dir: /app/
+    command: ["gunicorn", "-b", "0.0.0.0:5000", "api:create_app()"]
     restart: always
     ports:
       - "5000:5000"
@@ -40,7 +40,8 @@ services:
     build:
       context: WebDownloader
       dockerfile: Dockerfile
-    command: celery -A WebDownloader.jobs.worker.celery worker --loglevel=INFO
+    working_dir: /app
+    command: ["celery", "-A", "core.jobs.worker.celery", "worker", "--loglevel=INFO"]
 
     depends_on:
       - redis

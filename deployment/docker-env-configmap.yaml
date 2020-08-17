@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  APP_ENVIRONMENT: production
+  DATA_LOCATION: /db
+  FLASK_APP: ""
+  FLASK_DEBUG: "True"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: api-docker-env
+  name: docker-env
