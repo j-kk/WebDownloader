@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from celery import Celery
-from core.config import config, Config
+from WebDownloader.core.config import config, Config
 
 
 class CeleryClient(object):

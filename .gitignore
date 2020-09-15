@@ -136,3 +136,5 @@ db/
 env2/
 
 cfg.env
+
+package-lock.json

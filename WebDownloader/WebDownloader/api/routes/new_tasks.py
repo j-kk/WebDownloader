@@ -3,10 +3,10 @@ import datetime
 import validators
 from flask import Blueprint, request, jsonify
 
-from core.helpers import get_url
-from core.extensions.celery import TextTask, ImageTask, WebCrawlTask
-from api.schemas.tasks import WebsiteURLSchema
-from api import redis
+from WebDownloader.core.helpers import get_url
+from WebDownloader.core.extensions.celery import TextTask, ImageTask, WebCrawlTask
+from WebDownloader.api.schemas.tasks import WebsiteURLSchema
+from WebDownloader.api import redis
 
 new_tasks = Blueprint('new_tasks', __name__)
 

@@ -24,11 +24,16 @@ spec:
       labels:
         io.kompose.service: worker
     spec:
+      volumes:
+        - name: temps
+          emptyDir: {}
       containers:
       - args:
+        - python
+        - -m
         - celery
         - -A
-        - core.jobs.worker.celery
+        - WebDownloader.core.jobs.worker.celery
         - worker
         - --loglevel=INFO
         env:
@@ -36,34 +41,31 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: APP_ENVIRONMENT
-              name: docker-env
+              name: prodconfig
         - name: DATA_LOCATION
           valueFrom:
             configMapKeyRef:
               key: DATA_LOCATION
-              name: docker-env
+              name: prodconfig
         - name: FLASK_APP
           valueFrom:
             configMapKeyRef:
               key: FLASK_APP
-              name: docker-env
+              name: prodconfig
         - name: FLASK_DEBUG
           valueFrom:
             configMapKeyRef:
               key: FLASK_DEBUG
-              name: docker-env
-        image: worker
+              name: prodconfig
+        image: gcr.io/jnp2-docker/api:latest
         imagePullPolicy: ""
         name: worker
         resources: {}
-        volumeMounts:
-        - mountPath: /db
-          name: data-volume
         workingDir: /app
+        volumeMounts:
+          - name: temps
+            mountPath: /db
+
       restartPolicy: Always
       serviceAccountName: ""
-      volumes:
-      - name: data-volume
-        persistentVolumeClaim:
-          claimName: data-volume
 status: {}

@@ -10,7 +10,7 @@ services:
       context: WebDownloader
       dockerfile: Dockerfile
     working_dir: /app/
-    command: ["gunicorn", "-b", "0.0.0.0:5000", "api:create_app()"]
+    command: ["gunicorn", "-b", "0.0.0.0:5000", "wsgi:app"]
     restart: always
     ports:
       - "5000:5000"
@@ -35,13 +35,15 @@ services:
       - api
     volumes:
       - data-volume:/db
+    env_file:
+      - docker.env
 
   worker:
     build:
       context: WebDownloader
       dockerfile: Dockerfile
     working_dir: /app
-    command: ["celery", "-A", "core.jobs.worker.celery", "worker", "--loglevel=INFO"]
+    command: ["celery", "-A", "WebDownloader.core.jobs.worker.celery", "worker", "--loglevel=INFO"]
 
     depends_on:
       - redis

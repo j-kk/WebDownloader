@@ -18,6 +18,8 @@ class ConfigTemplate(object):
     CELERY_RESULT_BACKEND: str
     BROKER_URL: str
 
+    BUCKET_NAME: str
+
     DATA_LOCATION: str
 
     def __init__(self):
@@ -26,6 +28,7 @@ class ConfigTemplate(object):
         self.CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL') if None else 'redis://localhost:6379/0'
         self.CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND') if None else 'redis://localhost:6379/0'
         self.BROKER_URL = self.CELERY_BROKER_URL
+        self.BUCKET_NAME = os.getenv('BUCKET_NAME')
 
         if os.getenv('DATA_LOCATION') is None:
             raise Exception('DATA_LOCATION not set!')
@@ -98,7 +101,7 @@ class Config(object):
 
 def set_config():
     _environment = os.getenv("APP_ENVIRONMENT")
-    if not _environment:
+    if _environment is None:
         _environment = 'default'
     return Config(_environment)
 

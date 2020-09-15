@@ -1,4 +1,5 @@
 FROM node:latest as build-stage
+
 WORKDIR /app
 COPY ./client/package*.json ./
 RUN npm install

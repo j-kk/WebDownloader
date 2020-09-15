@@ -1,10 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert -f docker-compose.yml -v
-    kompose.version: 1.21.0 ()
-  creationTimestamp: null
   labels:
     io.kompose.service: api
   name: api
@@ -17,54 +13,51 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert -f docker-compose.yml -v
-        kompose.version: 1.21.0 ()
-      creationTimestamp: null
       labels:
         io.kompose.service: api
+        app: webapp
     spec:
       containers:
       - args:
-        - gunicorn
-        - -b
-        - 0.0.0.0:5000
-        - api:create_app()
+          - gunicorn
+          - wsgi:app
+          - --config=gunicorn_config.py
+          - --bind
+          - 0.0.0.0:80
+          - --proxy-allow-from
+          - "*"
+          - --forwarded-allow-ips
+          - "*"
+          - --proxy-protocol
+          - --log-level
+          - debug
         env:
         - name: APP_ENVIRONMENT
           valueFrom:
             configMapKeyRef:
               key: APP_ENVIRONMENT
-              name: docker-env
+              name: prodconfig
         - name: DATA_LOCATION
           valueFrom:
             configMapKeyRef:
               key: DATA_LOCATION
-              name: docker-env
+              name: prodconfig
         - name: FLASK_APP
           valueFrom:
             configMapKeyRef:
               key: FLASK_APP
-              name: docker-env
+              name: prodconfig
         - name: FLASK_DEBUG
           valueFrom:
             configMapKeyRef:
               key: FLASK_DEBUG
-              name: docker-env
-        image: api
+              name: prodconfig
+        image: gcr.io/jnp2-docker/api:latest
         imagePullPolicy: ""
         name: api
         ports:
-        - containerPort: 5000
+        - containerPort: 80
         resources: {}
-        volumeMounts:
-        - mountPath: /db
-          name: data-volume
         workingDir: /app/
       restartPolicy: Always
-      serviceAccountName: ""
-      volumes:
-      - name: data-volume
-        persistentVolumeClaim:
-          claimName: data-volume
 status: {}

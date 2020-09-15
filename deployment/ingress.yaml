@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: basic-ingress
+
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/*
+            backend:
+              serviceName: api
+              servicePort: 80
+          - path: /*
+            backend:
+              serviceName: vue
+              servicePort: 80

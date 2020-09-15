@@ -1,9 +1,10 @@
-from flask import Blueprint, send_from_directory, request, jsonify
-from api.schemas.tasks import TaskIdSchema
-from api import redis, celery
+from flask import Blueprint, request, jsonify, redirect
+from WebDownloader.api.schemas.tasks import TaskIdSchema
+from WebDownloader.api import redis, celery
+from WebDownloader.core.extensions.fileStorage import make_blob_public
+from WebDownloader.core.config import config
 
 task_view = Blueprint('task_view', __name__)
-
 
 @task_view.route('/checkState', methods=['POST'])
 def post():
@@ -32,9 +33,13 @@ def post():
     return jsonify(ret), 201 if len(ret) > 0 else 404
 
 
-@task_view.route('/downloadResults/<filename>')
+@task_view.route('/downloadResult/<filename>')
 def get(filename):
     """Returns api result
     :return: api result
     """
-    return send_from_directory(task_view.static_folder, filename)  # TODO replace becouse it's slow
+    if config['BUCKET_NAME']:
+        return redirect(make_blob_public(filename))
+    else:
+        from flask import send_from_directory
+        return send_from_directory(config['DATA_LOCATION'], filename)

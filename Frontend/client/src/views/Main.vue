@@ -108,7 +108,11 @@ export default {
     };
   },
   created() {
-    this.apiUrl = `http://${window.location.hostname}:5000`;
+    if (process.env.NODE_ENV === 'development') {
+      this.apiUrl = `http://${window.location.hostname}:5000`;
+    } else {
+      this.apiUrl = `http://${window.location.hostname}/api`;
+    }
   },
   methods: {
     showID(task, type) {
